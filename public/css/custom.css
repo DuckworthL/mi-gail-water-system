@@ -1,0 +1,334 @@
+/* public/css/custom.css */
+:root {
+    --primary-color: #0891b2;
+    /* Cyan-600 */
+    --primary-dark: #0e7490;
+    /* Cyan-700 */
+    --secondary-color: #0369a1;
+    /* Sky-700 */
+    --accent-color: #f59e0b;
+    /* Amber-500 */
+    --light-bg: #f0fdff;
+    /* Light cyan bg */
+    --success: #16a34a;
+    /* Green-600 */
+    --danger: #dc2626;
+    /* Red-600 */
+    --warning: #d97706;
+    /* Amber-600 */
+    --info: #0284c7;
+    /* Sky-600 */
+    --text-dark: #1e293b;
+    /* Slate-800 */
+    --text-light: #f8fafc;
+    /* Slate-50 */
+    --border-radius: 0.5rem;
+    --box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f1f5f9;
+    /* Slate-100 */
+    color: var(--text-dark);
+}
+
+.card {
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+    transition: var(--transition);
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    border-radius: var(--border-radius);
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.table {
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+/* Water theme elements */
+.water-drop {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background-color: var(--primary-color);
+    border-radius: 50% 50% 0 50%;
+    transform: rotate(45deg);
+}
+
+/* Custom navbar */
+.navbar-custom {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    padding: 1rem 0;
+}
+
+.navbar-custom .navbar-brand {
+    color: white;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.navbar-custom .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    margin: 0 0.25rem;
+    transition: var(--transition);
+    border-radius: var(--border-radius);
+}
+
+.navbar-custom .nav-link:hover,
+.navbar-custom .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white !important;
+}
+
+/* Status badges */
+.status-badge {
+    padding: 0.35em 0.65em;
+    font-weight: 600;
+    border-radius: 50rem;
+}
+
+/* Dashboard cards */
+.stats-card {
+    padding: 1.5rem;
+    border-left: 4px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;/* Set minimum height for all cards */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.stats-card .stats-icon {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 2.5rem;
+    opacity: 0.2;
+}
+
+/* Fix the display for all stats cards bottom sections */
+.stats-card .mt-2 {
+    margin-top: 1rem !important;
+    height: 24px;
+    /* Standard height for bottom section */
+    display: flex;
+    align-items: center;
+}
+
+/* Progress bar specific styling within stats-card */
+.stats-card .progress {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Animation effects */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+/* Add to custom.css */
+.avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Fixed dropdown menus */
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.custom-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 180px;
+    background-color: #fff;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    z-index: 1050;
+    padding: 0.5rem 0;
+    margin-top: 0.125rem;
+}
+
+.custom-dropdown-menu.show {
+    display: block;
+}
+
+.custom-dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-weight: 400;
+    color: #212529;
+    text-align: left;
+    text-decoration: none;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.custom-dropdown-item:hover {
+    background-color: #f8f9fa;
+    color: #16181b;
+    text-decoration: none;
+}
+
+.custom-dropdown-item.text-danger {
+    color: #dc3545 !important;
+}
+
+.custom-dropdown-item.text-danger:hover {
+    background-color: #f8d7da;
+}
+
+.custom-dropdown-item.text-success:hover {
+    background-color: #d1e7dd;
+}
+
+.custom-dropdown-divider {
+    height: 0;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    body {
+        background-color: white !important;
+    }
+
+    .card {
+        border: 1px solid #ddd !important;
+        box-shadow: none !important;
+        margin-bottom: 15px !important;
+    }
+
+    .card:hover {
+        transform: none !important;
+    }
+
+    .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .table th,
+    .table td {
+        border: 1px solid #ddd !important;
+    }
+
+    footer,
+    nav,
+    .page-link {
+        display: none !important;
+    }
+
+    .print-only {
+        display: block !important;
+    }
+}
+
+/* More specific dropdown fixes for z-index */
+.table-responsive {
+    overflow: visible;
+}
+
+.custom-dropdown {
+    position: relative;
+}
+
+/* Make sure dropdowns appear on top of other elements */
+.custom-dropdown-menu.show {
+    z-index: 1050;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Fix for table cells with dropdowns */
+td .custom-dropdown {
+    display: inline-block;
+    min-width: 80px;
+}
+
+/* Badge styling consistency */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Improve responsive tables */
+@media (max-width: 767px) {
+    .table-responsive table {
+        min-width: 800px;
+    }
+}
