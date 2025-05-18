@@ -10,7 +10,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
@@ -18,10 +18,20 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
+    <!-- Theme CSS -->
+    <link href="{{ asset('css/mi-gail-theme.css') }}" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
     
     <style>
+        :root {
+            --primary-color: #3490dc;
+            --primary-light: #6cb2eb;
+            --primary-dark: #2779bd;
+            --secondary-color: #38c172;
+        }
+        
         /* Live Clock Styles */
         .navbar-clock {
             font-size: 0.85rem;
@@ -37,53 +47,67 @@
             color: white;
         }
         
-        /* Make Reports nav item match Customers */
-        .navbar-nav .nav-item.dropdown {
-            display: flex;
-            align-items: center;
+        /* Water drop animation */
+        .water-drop {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+            animation: dropPulse 2s infinite;
+        }
+
+        @keyframes dropPulse {
+            0% { transform: rotate(45deg) scale(1); }
+            50% { transform: rotate(45deg) scale(1.1); }
+            100% { transform: rotate(45deg) scale(1); }
         }
         
-        .navbar-nav .nav-item.dropdown .nav-link {
+        /* Navbar custom styles */
+        .navbar-custom {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-custom .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
             padding: 0.5rem 1rem;
-            height: 100%;
-            display: flex;
-            align-items: center;
+            transition: all 0.2s;
         }
         
-        /* Consistent pagination styles */
-        .pagination {
-            margin-bottom: 0;
+        .navbar-custom .nav-link:hover {
+            color: white;
+            transform: translateY(-1px);
         }
-
-        .page-item .page-link {
-            color: #0d6efd;
-            border-radius: 4px;
-            margin: 0 2px;
+        
+        .navbar-custom .nav-link.active {
+            color: white;
+            position: relative;
         }
-
-        .page-item.active .page-link {
-            background-color: #0d6efd;
-            border-color: #0d6efd;
+        
+        .navbar-custom .nav-link.active:after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 1rem;
+            right: 1rem;
+            height: 3px;
+            background-color: white;
+            border-radius: 3px;
         }
-
-        .per-page-selector {
-            display: inline-flex;
+        
+        /* Avatar circle */
+        .avatar-circle {
+            display: flex;
             align-items: center;
-        }
-
-        .per-page-selector .btn {
-            border-radius: 0;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .per-page-selector .btn:first-child {
-            border-top-left-radius: 0.25rem;
-            border-bottom-left-radius: 0.25rem;
-        }
-
-        .per-page-selector .btn:last-child {
-            border-top-right-radius: 0.25rem;
-            border-bottom-right-radius: 0.25rem;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-weight: bold;
+            letter-spacing: -0.05em;
         }
         
         @media (max-width: 991px) {
@@ -98,6 +122,11 @@
             .navbar-clock {
                 display: none;
             }
+        }
+        
+        /* Footer styles */
+        footer {
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
     </style>
 
@@ -156,11 +185,19 @@
                                 <a class="nav-link dropdown-toggle {{ request()->routeIs('reports.*') ? 'active' : '' }}" href="#" role="button" data-bs-toggle="dropdown">
                                     <i class="bi bi-bar-chart me-1"></i> Reports
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ route('reports.sales') }}">Sales Report</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reports.delivery') }}">Delivery Report</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reports.customer') }}">Customer Report</a></li>
-                                    <li><a class="dropdown-item" href="{{ route('reports.inventory') }}">Inventory Report</a></li>
+                                <ul class="dropdown-menu shadow-sm">
+                                    <li><a class="dropdown-item" href="{{ route('reports.sales') }}">
+                                        <i class="bi bi-currency-dollar me-2"></i>Sales Report
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('reports.delivery') }}">
+                                        <i class="bi bi-truck me-2"></i>Delivery Report
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('reports.customer') }}">
+                                        <i class="bi bi-people me-2"></i>Customer Report
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="{{ route('reports.inventory') }}">
+                                        <i class="bi bi-box-seam me-2"></i>Inventory Report
+                                    </a></li>
                                 </ul>
                             </li>
                             @endif
@@ -179,7 +216,9 @@
                         @guest
                             @if (Route::has('login'))
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                    <a class="nav-link" href="{{ route('login') }}">
+                                        <i class="bi bi-box-arrow-in-right me-1"></i> {{ __('Login') }}
+                                    </a>
                                 </li>
                             @endif
                         @else
@@ -191,7 +230,7 @@
                                     <span>{{ Auth::user()->name }}</span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <div class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="navbarDropdown">
                                     <a class="dropdown-item" href="#">
                                         <i class="bi bi-person me-2"></i> My Profile
                                     </a>
@@ -233,14 +272,28 @@
         @endif
 
         <!-- Main Content -->
-        <main>
-            @yield('content')
+        <main class="py-4">
+            <div class="container">
+                @yield('content')
+            </div>
         </main>
         
         <!-- Footer -->
-        <footer class="py-3 mt-4 border-top bg-white">
-            <div class="container text-center">
-                <span class="text-muted">© {{ date('Y') }} Mi-Gail Water Refilling Station</span>
+        <footer class="py-4 mt-4 border-top bg-white">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <div class="water-drop me-2"></div>
+                            <h5 class="mb-0">Mi-Gail Water Refilling Station</h5>
+                        </div>
+                        <p class="text-muted mb-0 mt-2">Providing clean, safe water since 2020</p>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <p class="mb-0 text-muted">© {{ date('Y') }} Mi-Gail Water System</p>
+                        <p class="mb-0 text-muted">All rights reserved</p>
+                    </div>
+                </div>
             </div>
         </footer>
     </div>
@@ -324,6 +377,15 @@
                 updateClock();
                 setInterval(updateClock, 1000);
             }
+            
+            // Auto-hide alerts after 5 seconds
+            setTimeout(function() {
+                const alerts = document.querySelectorAll('.alert');
+                alerts.forEach(alert => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
         });
     </script>
     
