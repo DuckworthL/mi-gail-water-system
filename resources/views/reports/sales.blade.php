@@ -89,9 +89,6 @@
         align-items: center;
         justify-content: center;
     }
-    .metrics-icon-peso {
-        display: none !important;
-    }
 </style>
 @endsection
 
@@ -218,18 +215,18 @@
     <!-- Summary Stats - no-print -->
     <div class="mb-4 no-print">
     <div class="row g-4">
-        <div class="col-md-3">
-            <div class="card shadow-sm stats-card bg-white total-sales-card position-relative">
-                <div class="stats-icon text-primary">
-                    <i class="bi bi-currency-peso"></i>
-                </div>
-                <h6 class="text-muted mb-2">Total Sales</h6>
-                <h3 class="mb-0">₱{{ number_format($totalSales, 2) }}</h3>
-                <div class="mt-2 text-muted">
-                    <small>{{ $totalOrders }} orders</small>
-                </div>
-            </div>
+    <div class="col-md-3">
+    <div class="card shadow-sm stats-card bg-white position-relative">
+        <div class="stats-icon text-primary">
+            <i class="bi bi-cash"></i>
         </div>
+        <h6 class="text-muted mb-2">Total Sales</h6>
+        <h3 class="mb-0">₱{{ number_format($totalSales, 2) }}</h3>
+        <div class="mt-2 text-muted">
+            <small>{{ $totalOrders }} orders</small>
+        </div>
+    </div>
+</div>
         <div class="col-md-3">
             <div class="card shadow-sm stats-card bg-white">
                 <div class="stats-icon text-success">
