@@ -27,112 +27,112 @@
         </li>
     </ul>
     
-    <!-- Delivery Cards View -->
-    <div class="row">
-        @forelse($deliveries as $delivery)
-        <div class="col-md-6 col-xl-4 mb-4">
-            <div class="card shadow-sm h-100 {{ $delivery->order_status == 'pending' ? 'border-warning' : '' }}">
-                <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <h5 class="card-title mb-0">
-                        Order #{{ $delivery->id }}
-                    </h5>
-                    <span class="badge {{ $delivery->order_status == 'pending' ? 'bg-warning text-dark' : 'bg-success' }}">
-                        {{ ucfirst($delivery->order_status) }}
-                    </span>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex align-items-start mb-3">
-                        <div class="avatar-circle bg-primary me-3" style="flex-shrink: 0;">
-                            {{ substr($delivery->customer->name, 0, 1) }}
-                        </div>
-                        <div>
-                            <h6 class="mb-0">{{ $delivery->customer->name }}</h6>
-                            <small class="text-muted">{{ $delivery->customer->phone ?? 'No phone' }}</small>
-                            <p class="mb-0 text-truncate" style="max-width: 200px;" title="{{ $delivery->customer->address }}">
-                                {{ $delivery->customer->address ?? 'No address' }}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <small class="text-muted d-block">Quantity</small>
-                            <strong>{{ $delivery->quantity }} gallon(s)</strong>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted d-block">Total</small>
-                            <strong class="text-primary">₱{{ number_format($delivery->total_amount, 2) }}</strong>
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-6">
-                            <small class="text-muted d-block">Payment Status</small>
-                            <span class="badge {{ $delivery->payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
-                                {{ ucfirst($delivery->payment_status) }}
-                            </span>
-                        </div>
-                        <div class="col-6">
-                            <small class="text-muted d-block">Date Ordered</small>
-                            {{ $delivery->created_at->format('M d, Y') }}
-                        </div>
-                    </div>
-                    
-                    <div class="mt-3">
-                        @if(auth()->user()->isDelivery())
-                            @if($delivery->order_status == 'pending')
-                                <button class="btn btn-primary w-100 complete-btn" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#completeModal" 
-                                    data-order-id="{{ $delivery->id }}"
-                                    data-payment-status="{{ $delivery->payment_status }}">
-                                    <i class="bi bi-check2-circle me-1"></i> Mark as Delivered
-                                </button>
-                            @else
-                                <a href="{{ route('deliveries.show', $delivery->id) }}" class="btn btn-outline-primary w-100">
-                                    <i class="bi bi-eye me-1"></i> View Details
-                                </a>
-                            @endif
-                        @else
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <small class="text-muted">Delivery Person:</small>
-                                    <span class="ms-1">{{ $delivery->deliveryPerson->name ?? 'Not Assigned' }}</span>
+    <!-- Delivery Table View -->
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Date Ordered</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center">Payment</th>
+                            <th>Delivery Person</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($deliveries as $delivery)
+                        <tr class="{{ $delivery->order_status == 'pending' ? 'table-warning' : '' }}">
+                            <td>#{{ $delivery->id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary me-2">
+                                        {{ substr($delivery->customer->name, 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ $delivery->customer->name }}</div>
+                                        <small class="text-muted">{{ $delivery->customer->phone ?? 'No phone' }}</small>
+                                    </div>
                                 </div>
-                                <a href="{{ route('deliveries.show', $delivery->id) }}" class="btn btn-outline-primary">
-                                    <i class="bi bi-eye me-1"></i> Details
-                                </a>
-                            </div>
-                        @endif
+                            </td>
+                            <td>{{ $delivery->created_at->format('M d, Y') }}</td>
+                            <td>{{ $delivery->quantity }} gallon(s)</td>
+                            <td class="text-primary fw-semibold">₱{{ number_format($delivery->total_amount, 2) }}</td>
+                            <td class="text-center">
+                                <span class="badge {{ $delivery->order_status == 'pending' ? 'bg-warning text-dark' : 'bg-success' }}">
+                                    {{ ucfirst($delivery->order_status) }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge {{ $delivery->payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                    {{ ucfirst($delivery->payment_status) }}
+                                </span>
+                            </td>
+                            <td>{{ $delivery->deliveryPerson->name ?? 'Not Assigned' }}</td>
+                            <td class="text-end">
+                                @if(auth()->user()->isDelivery())
+                                    @if($delivery->order_status == 'pending')
+                                        <button class="btn btn-sm btn-primary complete-btn" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#completeModal" 
+                                            data-order-id="{{ $delivery->id }}"
+                                            data-payment-status="{{ $delivery->payment_status }}">
+                                            <i class="bi bi-check2-circle me-1"></i> Complete
+                                        </button>
+                                    @else
+                                        <a href="{{ route('deliveries.show', $delivery->id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye me-1"></i> View
+                                        </a>
+                                    @endif
+                                @else
+                                    <a href="{{ route('deliveries.show', $delivery->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-eye me-1"></i> Details
+                                    </a>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="9" class="text-center py-4">
+                                <div class="d-flex flex-column align-items-center">
+                                    <i class="bi bi-truck text-muted mb-2" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mb-2">No deliveries found</p>
+                                    <p class="mb-0">There are currently no {{ request('status', 'pending') }} deliveries in the system.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            @if($deliveries->hasPages())
+            <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+                <div class="per-page-selector">
+                    <span class="me-2">Show:</span>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <a href="{{ request()->fullUrlWithQuery(['per_page' => 10, 'page' => 1]) }}" 
+                           class="btn {{ request('per_page', 10) == 10 ? 'btn-primary' : 'btn-outline-secondary' }}">10</a>
+                        <a href="{{ request()->fullUrlWithQuery(['per_page' => 20, 'page' => 1]) }}" 
+                           class="btn {{ request('per_page', 10) == 20 ? 'btn-primary' : 'btn-outline-secondary' }}">20</a>
+                        <a href="{{ request()->fullUrlWithQuery(['per_page' => 50, 'page' => 1]) }}" 
+                           class="btn {{ request('per_page', 10) == 50 ? 'btn-primary' : 'btn-outline-secondary' }}">50</a>
+                        <a href="{{ request()->fullUrlWithQuery(['per_page' => 100, 'page' => 1]) }}" 
+                           class="btn {{ request('per_page', 10) == 100 ? 'btn-primary' : 'btn-outline-secondary' }}">100</a>
                     </div>
                 </div>
-                @if($delivery->order_status == 'completed' && isset($delivery->delivery_date))
-                <div class="card-footer bg-white">
-                    <small class="text-muted">Delivered on: {{ \Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y h:i A') }}</small>
-                </div>
-                @endif
-            </div>
-        </div>
-        @empty
-        <div class="col-12">
-            <div class="alert alert-info">
-                <div class="d-flex align-items-center">
-                    <i class="bi bi-info-circle-fill fs-4 me-3"></i>
-                    <div>
-                        <h5 class="mb-1">No deliveries found</h5>
-                        <p class="mb-0">There are currently no {{ request('status', 'pending') }} deliveries in the system.</p>
-                    </div>
+                <div>
+                    {{ $deliveries->withQueryString()->links() }}
                 </div>
             </div>
+            @endif
         </div>
-        @endforelse
     </div>
-    
-    @if($deliveries->hasPages())
-    <div class="mt-4">
-        {{ $deliveries->withQueryString()->links() }}
-    </div>
-    @endif
 </div>
 
 <!-- Complete Delivery Modal -->

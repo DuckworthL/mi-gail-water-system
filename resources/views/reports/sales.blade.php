@@ -1,156 +1,96 @@
-                            @extends('layouts.app')
+@extends('layouts.app')
 
 @section('styles')
 <style>
-    /* Print-specific styles */
     @media print {
-        /* Hide everything by default */
-        body * {
-            visibility: hidden;
-        }
-        
-        /* Show only the printable section */
-        .printable-section, .printable-section * {
-            visibility: visible;
-        }
-        
-        /* Position the printable section at the top of the page */
+        body * { visibility: hidden; }
+        .printable-section, .printable-section * { visibility: visible; }
         .printable-section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 15px;
+            position: absolute; left: 0; top: 0; width: 100%; padding: 15px;
         }
-        
-        /* Hide all non-printable elements */
-        .no-print, .stats-card, .chart-container {
-            display: none !important;
-        }
-        
-        /* Format the table properly */
+        .no-print, .stats-card, .chart-container { display: none !important; }
         .table {
             width: 100% !important;
             border-collapse: collapse !important;
             font-size: 10pt !important;
         }
-        
         .table th, .table td {
             border: 1px solid #ddd !important;
             padding: 5px !important;
         }
-        
-        /* Remove styling that wastes ink */
-        .card {
-            border: none !important;
-            box-shadow: none !important;
-            margin: 0 !important;
-        }
-        
-        .card-header, .card-body {
-            padding: 0 !important;
-        }
-        
-        /* Replace badge styling with plain text to save ink */
         .badge {
             background-color: transparent !important;
             color: #000 !important;
             font-weight: normal !important;
             padding: 0 !important;
         }
-        
-        /* Format header/footer for print */
-        .print-header {
-            text-align: center;
-            margin-bottom: 20px;
+        .card { border: none !important; box-shadow: none !important; margin: 0 !important; }
+        .card-header, .card-body { padding: 0 !important; }
+        .print-header { text-align: center; margin-bottom: 20px; }
+        .company-name {
+            font-size: 24px; font-weight: 700; margin-bottom: 5px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        
+        .report-title { font-size: 20px; font-weight: 600; margin-bottom: 5px; }
+        .report-period { font-size: 16px; margin-bottom: 15px; }
         .print-footer {
-            margin-top: 30px;
-            page-break-inside: avoid;
+            margin-top: 30px; page-break-inside: avoid;
+            border-top: 1px solid #ddd; padding-top: 10px; font-size: 9pt;
         }
-        
-        /* Hide links in print */
-        a {
-            text-decoration: none !important;
-            color: #000 !important;
+        a { text-decoration: none !important; color: #000 !important; }
+        .print-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
         }
+        .print-table th, .print-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .print-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        .print-table tr:nth-child(even) { background-color: #f2f2f2; }
     }
-    
-    /* Loading indicator */
     .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
-        z-index: 9999;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(255,255,255,0.8); z-index: 9999;
+        display: flex; align-items: center; justify-content: center; flex-direction: column;
+    }
+    .spinner {
+        width: 50px; height: 50px;
+        border: 4px solid var(--primary-color);
+        border-radius: 50%; border-top: 4px solid #f3f3f3;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .btn-group-report { margin-bottom: 15px; }
+    .btn-report { border-radius: 20px; padding: 8px 16px; margin-right: 5px; font-weight: 600; transition: all 0.2s; }
+    .btn-report:hover { transform: translateY(-2px); }
+    .btn-report.active { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color); }
+    .delete-btn { color: #dc3545 !important; font-weight: 600; }
+    .delete-btn i { margin-right: 5px; }
+    .per-page-selector { display: inline-flex; align-items: center; }
+    .per-page-selector .btn { border-radius: 0; padding: 0.25rem 0.5rem; }
+    .per-page-selector .btn:first-child { border-top-left-radius: 0.25rem; border-bottom-left-radius: 0.25rem; }
+    .per-page-selector .btn:last-child { border-top-right-radius: 0.25rem; border-bottom-right-radius: 0.25rem; }
+    .printable-section { display: none; }
+    /* Stats icon, watermark style for all cards */
+    .stats-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 2.5rem;
+        opacity: 0.15;
+        z-index: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-direction: column;
     }
-    
-    .spinner {
-        width: 50px;
-        height: 50px;
-        border: 4px solid var(--primary-color);
-        border-radius: 50%;
-        border-top: 4px solid #f3f3f3;
-        animation: spin 1s linear infinite;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Chart enhancements */
-    .chart-container {
-        position: relative;
-    }
-    
-    /* Enhanced buttons */
-    .btn-group-report {
-        margin-bottom: 15px;
-    }
-    
-    .btn-report {
-        border-radius: 20px;
-        padding: 8px 16px;
-        margin-right: 5px;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    
-    .btn-report:hover {
-        transform: translateY(-2px);
-    }
-    
-    .btn-report.active {
-        box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
-    }
-    
-    /* Enhanced records per page selector */
-    .per-page-selector {
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .per-page-selector .btn {
-        border-radius: 0;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .per-page-selector .btn:first-child {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    
-    .per-page-selector .btn:last-child {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
+    .metrics-icon-peso {
+        display: none !important;
     }
 </style>
 @endsection
@@ -215,15 +155,15 @@
                     <div class="btn-group-report mb-3">
                         <a href="{{ route('reports.sales', ['period' => 'daily', 'granularity' => request('granularity', 'daily')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'daily' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-day me-1"></i> Today
+                            <i class="bi bi-calendar-day me-1"></i> Daily
                         </a>
                         <a href="{{ route('reports.sales', ['period' => 'weekly', 'granularity' => request('granularity', 'daily')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'weekly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-week me-1"></i> This Week
+                            <i class="bi bi-calendar-week me-1"></i> Weekly
                         </a>
                         <a href="{{ route('reports.sales', ['period' => 'monthly', 'granularity' => request('granularity', 'daily')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'monthly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-month me-1"></i> This Month
+                            <i class="bi bi-calendar-month me-1"></i> Monthly
                         </a>
                         <a href="{{ route('reports.sales', ['period' => 'custom', 'granularity' => request('granularity', 'daily')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'custom' ? 'btn-primary active' : 'btn-outline-primary' }}">
@@ -277,57 +217,57 @@
     
     <!-- Summary Stats - no-print -->
     <div class="mb-4 no-print">
-        <div class="row g-4">
-            <div class="col-md-3">
-                <div class="card shadow-sm stats-card bg-white">
-                    <div class="stats-icon text-primary">
-                        <i class="bi bi-currency-dollar"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Total Sales</h6>
-                    <h3 class="mb-0">₱{{ number_format($totalSales, 2) }}</h3>
-                    <div class="mt-2 text-muted">
-                        <small>{{ $totalOrders }} orders</small>
-                    </div>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm stats-card bg-white total-sales-card position-relative">
+                <div class="stats-icon text-primary">
+                    <i class="bi bi-currency-peso"></i>
+                </div>
+                <h6 class="text-muted mb-2">Total Sales</h6>
+                <h3 class="mb-0">₱{{ number_format($totalSales, 2) }}</h3>
+                <div class="mt-2 text-muted">
+                    <small>{{ $totalOrders }} orders</small>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm stats-card bg-white">
-                    <div class="stats-icon text-success">
-                        <i class="bi bi-check-circle"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Paid Orders</h6>
-                    <h3 class="mb-0">₱{{ number_format($paidSales, 2) }}</h3>
-                    <div class="mt-2 text-muted">
-                        <small>{{ $paidOrders }} orders</small>
-                    </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm stats-card bg-white">
+                <div class="stats-icon text-success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <h6 class="text-muted mb-2">Paid Orders</h6>
+                <h3 class="mb-0">₱{{ number_format($paidSales, 2) }}</h3>
+                <div class="mt-2 text-muted">
+                    <small>{{ $paidOrders }} orders</small>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm stats-card bg-white">
-                    <div class="stats-icon text-warning">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Unpaid Orders</h6>
-                    <h3 class="mb-0">₱{{ number_format($unpaidSales, 2) }}</h3>
-                    <div class="mt-2 text-muted">
-                        <small>{{ $unpaidOrders }} orders</small>
-                    </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm stats-card bg-white">
+                <div class="stats-icon text-warning">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h6 class="text-muted mb-2">Unpaid Orders</h6>
+                <h3 class="mb-0">₱{{ number_format($unpaidSales, 2) }}</h3>
+                <div class="mt-2 text-muted">
+                    <small>{{ $unpaidOrders }} orders</small>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="card shadow-sm stats-card bg-white">
-                    <div class="stats-icon text-info">
-                        <i class="bi bi-droplet"></i>
-                    </div>
-                    <h6 class="text-muted mb-2">Water Sold</h6>
-                    <h3 class="mb-0">{{ $totalQuantity }}</h3>
-                    <div class="mt-2 text-muted">
-                        <small>containers</small>
-                    </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-sm stats-card bg-white">
+                <div class="stats-icon text-info">
+                    <i class="bi bi-droplet"></i>
+                </div>
+                <h6 class="text-muted mb-2">Water Sold</h6>
+                <h3 class="mb-0">{{ $totalQuantity }}</h3>
+                <div class="mt-2 text-muted">
+                    <small>containers</small>
                 </div>
             </div>
         </div>
     </div>
+</div>
     
     <!-- Sales Chart - no-print -->
     <div class="card shadow-sm mb-4 no-print">
@@ -341,56 +281,213 @@
         </div>
     </div>
     
-    <!-- Inside the printable-section div -->
-<div class="printable-section">
-    <!-- Print Header (no changes) -->
-    ...
-
-    <!-- Sales Table - This is what will print - Making it responsive -->
-    <div class="card">
-        <div class="card-header bg-white">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Sales Details</h5>
+            <div class="no-print">
+                <span class="text-muted">
+                    {{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}
+                </span>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
-                            <th>Order #</th>
+                            <th>ID</th>
                             <th>Date</th>
                             <th>Customer</th>
+                            <th class="no-print">Type</th>
                             <th>Quantity</th>
                             <th>Type</th>
                             <th>Payment</th>
                             <th class="text-end">Amount</th>
+                            <th class="text-center no-print">Status</th>
+                            <th class="text-end no-print">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($orders as $order)
                         <tr>
-                            <td>#{{ $order->id }}</td>
+                            <td>{{ $order->id }}</td>
                             <td>{{ $order->created_at->format('M d, Y') }}</td>
-                            <td>{{ $order->customer->name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary me-2 no-print">
+                                        {{ substr($order->customer->name, 0, 1) }}
+                                    </div>
+                                    <div>{{ $order->customer->name }}</div>
+                                </div>
+                            </td>
+                            <td class="no-print">
+                                @if($order->is_delivery)
+                                <span class="badge bg-info">Delivery</span>
+                                @else
+                                <span class="badge bg-secondary">Pick-up</span>
+                                @endif
+                            </td>
                             <td>{{ $order->quantity }}</td>
                             <td>{{ $order->is_delivery ? 'Delivery' : 'Pick-up' }}</td>
                             <td>{{ ucfirst($order->payment_status) }}</td>
-                            <td class="text-end">₱{{ number_format($order->total_amount, 2) }}</td>
+                            <td class="text-end fw-bold">₱{{ number_format($order->total_amount, 2) }}</td>
+                            <td class="text-center no-print">
+                                <span class="badge {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                    {{ ucfirst($order->payment_status) }}
+                                </span>
+                            </td>
+                            <td class="text-end no-print">
+                                <a href="{{ route('orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">No sales data found for the selected period</td>
+                            <td colspan="10" class="text-center py-3">No sales data found for the selected period</td>
                         </tr>
                         @endforelse
                     </tbody>
                     <tfoot>
                         <tr class="table-light fw-bold">
-                            <td colspan="3">Total: {{ $totalOrders }} orders</td>
+                            <td></td>
+                            <td colspan="2">Total: {{ $totalOrders }} orders</td>
+                            <td class="no-print"></td>
                             <td>{{ $totalQuantity }} units</td>
                             <td colspan="2"></td>
                             <td class="text-end">₱{{ number_format($totalSales, 2) }}</td>
+                            <td class="no-print"></td>
+                            <td class="no-print"></td>
                         </tr>
                     </tfoot>
                 </table>
+            </div>
+        </div>
+        
+        @if($orders->hasPages())
+        <div class="card-footer bg-white d-flex justify-content-between align-items-center no-print">
+            <div class="per-page-selector">
+                <span class="me-2">Show:</span>
+                <div class="btn-group btn-group-sm" role="group">
+                    <a href="{{ route('reports.sales', array_merge(request()->except('per_page', 'page'), ['per_page' => 10])) }}" 
+                       class="btn {{ $perPage == 10 ? 'btn-primary' : 'btn-outline-secondary' }}">10</a>
+                    <a href="{{ route('reports.sales', array_merge(request()->except('per_page', 'page'), ['per_page' => 20])) }}" 
+                       class="btn {{ $perPage == 20 ? 'btn-primary' : 'btn-outline-secondary' }}">20</a>
+                    <a href="{{ route('reports.sales', array_merge(request()->except('per_page', 'page'), ['per_page' => 50])) }}" 
+                       class="btn {{ $perPage == 50 ? 'btn-primary' : 'btn-outline-secondary' }}">50</a>
+                    <a href="{{ route('reports.sales', array_merge(request()->except('per_page', 'page'), ['per_page' => 100])) }}" 
+                       class="btn {{ $perPage == 100 ? 'btn-primary' : 'btn-outline-secondary' }}">100</a>
+                </div>
+            </div>
+            <div>
+                {{ $orders->withQueryString()->links() }}
+            </div>
+        </div>
+        @endif
+    </div>
+    
+    <!-- Printable Section - Hidden until printing -->
+    <div class="printable-section">
+        <div class="print-header">
+            <div class="text-center mb-4">
+                <div class="company-name">MI-GAIL WATER</div>
+                <div class="report-title">SALES REPORT</div>
+                <div class="report-period">{{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}</div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <th class="text-end">Total Sales:</th>
+                            <td>₱{{ number_format($totalSales, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Total Orders:</th>
+                            <td>{{ $totalOrders }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <th class="text-end">Paid Orders:</th>
+                            <td>{{ $paidOrders }} (₱{{ number_format($paidSales, 2) }})</td>
+                        </tr>
+                        <tr>
+                            <th class="text-end">Unpaid Orders:</th>
+                            <td>{{ $unpaidOrders }} (₱{{ number_format($unpaidSales, 2) }})</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <th class="text-end">Water Sold:</th>
+                            <td>{{ $totalQuantity }} containers</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <th class="text-end">Report Period:</th>
+                            <td>{{ ucfirst($granularity) }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sales Data Table for Print -->
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Date</th>
+                    <th>Customer</th>
+                    <th>Quantity</th>
+                    <th>Type</th>
+                    <th>Payment</th>
+                    <th class="text-end">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($orders as $order)
+                <tr>
+                    <td>{{ $order->id }}</td>
+                    <td>{{ $order->created_at->format('M d, Y') }}</td>
+                    <td>{{ $order->customer->name }}</td>
+                    <td>{{ $order->quantity }}</td>
+                    <td>{{ $order->is_delivery ? 'Delivery' : 'Pick-up' }}</td>
+                    <td>{{ ucfirst($order->payment_status) }}</td>
+                    <td class="text-end">₱{{ number_format($order->total_amount, 2) }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="text-center">No sales data found for the selected period</td>
+                </tr>
+                @endforelse
+                <tr>
+                    <td colspan="3"><strong>Total: {{ $totalOrders }} orders</strong></td>
+                    <td><strong>{{ $totalQuantity }} units</strong></td>
+                    <td colspan="2"></td>
+                    <td class="text-end"><strong>₱{{ number_format($totalSales, 2) }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="print-footer mt-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-0"><strong>Generated by:</strong> {{ Auth::user()->name ?? 'DuckworthL' }}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <p class="mb-0"><strong>Date Generated:</strong> {{ now()->format('Y-m-d H:i:s') }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -402,11 +499,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const ctx = document.getElementById('salesChart').getContext('2d');
-    
-    // Chart data from backend
     const salesData = @json($chartData);
-    
-    // Configure datasets with enhanced styling and tooltips
+
     const datasets = [
         {
             label: 'Sales (₱)',
@@ -440,8 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pointHitRadius: 10
         }
     ];
-    
-    // Add trend lines if available
+
     if (salesData.salesTrend) {
         datasets.push({
             label: 'Sales Trend',
@@ -456,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
             pointHoverRadius: 0
         });
     }
-    
+
     if (salesData.quantityTrend) {
         datasets.push({
             label: 'Quantity Trend',
@@ -472,8 +565,8 @@ document.addEventListener('DOMContentLoaded', function() {
             yAxisID: 'y1'
         });
     }
-    
-    const chart = new Chart(ctx, {
+
+    new Chart(ctx, {
         type: 'line',
         data: {
             labels: salesData.labels,
@@ -482,29 +575,20 @@ document.addEventListener('DOMContentLoaded', function() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index',
-            },
+            interaction: { intersect: false, mode: 'index' },
             scales: {
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Sales Amount (₱)',
-                        font: {
-                            weight: 'bold'
-                        }
+                        font: { weight: 'bold' }
                     },
                     ticks: {
-                        callback: function(value) {
-                            return '₱' + value.toLocaleString();
-                        },
+                        callback: function(value) { return '₱' + value.toLocaleString(); },
                         precision: 0
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
                 },
                 y1: {
                     beginAtZero: true,
@@ -512,38 +596,27 @@ document.addEventListener('DOMContentLoaded', function() {
                     title: {
                         display: true,
                         text: 'Quantity',
-                        font: {
-                            weight: 'bold'
-                        }
+                        font: { weight: 'bold' }
                     },
                     grid: {
                         drawOnChartArea: false,
                         color: 'rgba(245, 158, 11, 0.1)'
                     },
-                    ticks: {
-                        precision: 0
-                    }
+                    ticks: { precision: 0 }
                 },
                 x: {
                     title: {
                         display: true,
                         text: '{{ $granularity == "daily" ? "Date" : ($granularity == "weekly" ? "Week" : "Month") }}',
-                        font: {
-                            weight: 'bold'
-                        }
+                        font: { weight: 'bold' }
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
+                    grid: { color: 'rgba(0, 0, 0, 0.05)' }
                 }
             },
             plugins: {
                 legend: {
                     position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 10
-                    }
+                    labels: { usePointStyle: true, boxWidth: 10 }
                 },
                 tooltip: {
                     backgroundColor: 'rgba(255, 255, 255, 0.9)',
@@ -558,17 +631,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     callbacks: {
                         label: function(context) {
                             let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
+                            if (label) { label += ': '; }
                             if (context.dataset.label === 'Sales (₱)' || context.dataset.label === 'Sales Trend') {
                                 label += '₱' + context.parsed.y.toLocaleString(undefined, {
                                     minimumFractionDigits: 2,
                                     maximumFractionDigits: 2
                                 });
-                            } else {
-                                label += context.parsed.y;
-                            }
+                            } else { label += context.parsed.y; }
                             return label;
                         }
                     }
@@ -576,31 +645,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
-    // Function to update filter parameter
+
     window.updateFilter = function(value) {
         const url = new URL(window.location);
         url.searchParams.set('filter', value);
         showLoading();
         window.location = url.toString();
     };
-    
-    // Function to update granularity parameter
+
     window.updateGranularity = function(value) {
         const url = new URL(window.location);
         url.searchParams.set('granularity', value);
         showLoading();
         window.location = url.toString();
     };
-    
-    // Show loading indicator
+
     window.showLoading = function() {
         document.getElementById('loadingOverlay').style.display = 'flex';
     };
-    
-    // Add loading indicator to the form submit
+
     document.getElementById('reportForm').addEventListener('submit', function() {
         showLoading();
+    });
+
+    window.addEventListener('beforeprint', function() {
+        document.querySelector('.printable-section').style.display = 'block';
+    });
+
+    window.addEventListener('afterprint', function() {
+        document.querySelector('.printable-section').style.display = 'none';
     });
 });
 </script>

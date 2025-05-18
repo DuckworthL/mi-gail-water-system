@@ -51,6 +51,7 @@
                 <table class="table table-hover align-middle mb-0">
                     <thead class="table-light">
                         <tr>
+                            <th>ID</th>
                             <th>Customer</th>
                             <th>Contact</th>
                             <th>Address</th>
@@ -63,10 +64,11 @@
                     <tbody>
                         @forelse($customers as $customer)
                         <tr>
+                            <td>{{ $customer->id }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="avatar-circle bg-primary me-2">
-                                        {{ substr($customer->name, 0, 1) }}
+                                        {{ strtoupper(substr($customer->name, 0, 1)) }}
                                     </div>
                                     <div class="fw-semibold">{{ $customer->name }}</div>
                                 </div>
@@ -118,7 +120,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="8" class="text-center py-4">
                                 <div class="d-flex flex-column align-items-center">
                                     <i class="bi bi-people text-muted mb-2" style="font-size: 3rem;"></i>
                                     <p class="text-muted mb-2">No customers found</p>

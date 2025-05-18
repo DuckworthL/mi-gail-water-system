@@ -35,20 +35,26 @@ class DashboardController extends Controller
             return redirect()->route('orders.create');
         }
 
+        // Get current Manila time
+        $currentTime = Carbon::now('Asia/Manila');
+        
+        // Check if sales should be hidden (between 10PM and 6AM) for ALL users
+        $hideSales = ($currentTime->hour >= 22 || $currentTime->hour < 6);
+        
         // Get sales data for today
         $today = Carbon::today();
-        $todaySales = Order::whereDate('created_at', $today)->sum('total_amount');
+        $todaySales = $hideSales ? 0 : Order::whereDate('created_at', $today)->sum('total_amount');
         $todayOrders = Order::whereDate('created_at', $today)->count();
         
         // Get sales data for current week
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
-        $weeklySales = Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('total_amount');
+        $weeklySales = $hideSales ? 0 : Order::whereBetween('created_at', [$startOfWeek, $endOfWeek])->sum('total_amount');
         
         // Get sales data for current month
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
-        $monthlySales = Order::whereBetween('created_at', [$startOfMonth, $endOfMonth])->sum('total_amount');
+        $monthlySales = $hideSales ? 0 : Order::whereBetween('created_at', [$startOfMonth, $endOfMonth])->sum('total_amount');
         
         // Pending deliveries
         $pendingDeliveries = Order::where('is_delivery', true)
@@ -92,6 +98,9 @@ class DashboardController extends Controller
         // Get total customers count
         $totalCustomers = Customer::count();
         
+        // Pass the flag to indicate if sales data should be shown or hidden
+        $showSalesData = !$hideSales;
+        
         return view('dashboard', compact(
             'todaySales', 
             'todayOrders', 
@@ -103,7 +112,8 @@ class DashboardController extends Controller
             'totalCustomers',
             'recentOrders',
             'orderPeriod',
-            'perPage'
+            'perPage',
+            'showSalesData'
         ));
     }
 }

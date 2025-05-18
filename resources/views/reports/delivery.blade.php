@@ -126,27 +126,6 @@
     .btn-report.active {
         box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
     }
-    
-    /* Enhanced records per page selector */
-    .per-page-selector {
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .per-page-selector .btn {
-        border-radius: 0;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .per-page-selector .btn:first-child {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    
-    .per-page-selector .btn:last-child {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
-    }
 </style>
 @endsection
 
@@ -202,72 +181,82 @@
     </div>
     
     <!-- Report Type Buttons -->
-    <div class="card shadow-sm mb-4 no-print">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-lg-8">
-                    <h5 class="card-title mb-3">Report Period</h5>
-                    <div class="btn-group-report mb-3">
-                        <a href="{{ route('reports.delivery', ['period' => 'daily', 'status' => request('status', 'all')]) }}" 
-                           class="btn btn-report {{ $reportPeriod == 'daily' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-day me-1"></i> Today
-                        </a>
-                        <a href="{{ route('reports.delivery', ['period' => 'weekly', 'status' => request('status', 'all')]) }}" 
-                           class="btn btn-report {{ $reportPeriod == 'weekly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-week me-1"></i> This Week
-                        </a>
-                        <a href="{{ route('reports.delivery', ['period' => 'monthly', 'status' => request('status', 'all')]) }}" 
-                           class="btn btn-report {{ $reportPeriod == 'monthly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-month me-1"></i> This Month
-                        </a>
-                        <a href="{{ route('reports.delivery', ['period' => 'custom', 'status' => request('status', 'all')]) }}" 
-                           class="btn btn-report {{ $reportPeriod == 'custom' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-range me-1"></i> Custom Range
-                        </a>
-                    </div>
-                    
-                    <form id="reportForm" action="{{ route('reports.delivery') }}" method="GET" class="row g-3 align-items-end">
-                        <input type="hidden" name="period" value="custom">
-                        <div class="col-md-4">
-                            <label for="start_date" class="form-label">Start Date</label>
-                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date', $startDate->format('Y-m-d')) }}">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="end_date" class="form-label">End Date</label>
-                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}">
-                        </div>
-                        <div class="col-md-4">
-                            <button type="submit" class="btn btn-primary w-100" onclick="showLoading()">
-                                <i class="bi bi-search me-1"></i> Generate Report
-                            </button>
-                        </div>
-                    </form>
+<div class="card shadow-sm mb-4 no-print">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-8">
+                <h5 class="card-title mb-3">Report Period</h5>
+                <div class="btn-group-report mb-3">
+                    <a href="{{ route('reports.delivery', ['period' => 'daily', 'status' => request('status', 'all')]) }}" 
+                       class="btn btn-report {{ $reportPeriod == 'daily' ? 'btn-primary active' : 'btn-outline-primary' }}">
+                        <i class="bi bi-calendar-day me-1"></i> Daily
+                    </a>
+                    <a href="{{ route('reports.delivery', ['period' => 'weekly', 'status' => request('status', 'all')]) }}" 
+                       class="btn btn-report {{ $reportPeriod == 'weekly' ? 'btn-primary active' : 'btn-outline-primary' }}">
+                        <i class="bi bi-calendar-week me-1"></i> Weekly
+                    </a>
+                    <a href="{{ route('reports.delivery', ['period' => 'monthly', 'status' => request('status', 'all')]) }}" 
+                       class="btn btn-report {{ $reportPeriod == 'monthly' ? 'btn-primary active' : 'btn-outline-primary' }}">
+                        <i class="bi bi-calendar-month me-1"></i> Monthly
+                    </a>
+                    <a href="{{ route('reports.delivery', ['period' => 'custom', 'status' => request('status', 'all')]) }}" 
+                       class="btn btn-report {{ $reportPeriod == 'custom' ? 'btn-primary active' : 'btn-outline-primary' }}">
+                        <i class="bi bi-calendar-range me-1"></i> Custom Range
+                    </a>
                 </div>
                 
-                <div class="col-lg-4">
-                    <h5 class="card-title mb-3">Filter Options</h5>
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Delivery Status</label>
-                        <select id="statusSelect" name="status" class="form-select" onchange="updateStatus(this.value)">
-                            <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Deliveries</option>
-                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
-                            <option value="pending" {{ request('status', 'pending') == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
+                <form id="reportForm" action="{{ route('reports.delivery') }}" method="GET" class="row g-3 align-items-end">
+                    <input type="hidden" name="period" value="custom">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" class="form-control" id="start_date" name="start_date" value="{{ request('start_date', $startDate->format('Y-m-d')) }}">
                     </div>
-                    
-                    <div class="mb-3">
-                        <label for="granularity" class="form-label">Report Granularity</label>
-                        <select id="granularitySelect" name="granularity" class="form-select" onchange="updateGranularity(this.value)">
-                            <option value="daily" {{ $granularity == 'daily' ? 'selected' : '' }}>Daily Breakdown</option>
-                            <option value="weekly" {{ $granularity == 'weekly' ? 'selected' : '' }}>Weekly Summary</option>
-                            <option value="monthly" {{ $granularity == 'monthly' ? 'selected' : '' }}>Monthly Summary</option>
-                        </select>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" class="form-control" id="end_date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}">
                     </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100" onclick="showLoading()">
+                            <i class="bi bi-search me-1"></i> Generate Report
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="col-lg-4">
+                <h5 class="card-title mb-3">Filter Options</h5>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Delivery Status</label>
+                    <select id="statusSelect" name="status" class="form-select" onchange="updateStatus(this.value)">
+                        <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All Deliveries</option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="driver" class="form-label">Delivery Driver</label>
+                    <select id="driverSelect" name="driver" class="form-select" onchange="updateDriver(this.value)">
+                        <option value="all" {{ request('driver', 'all') == 'all' ? 'selected' : '' }}>All Drivers</option>
+                        @foreach($drivers ?? [] as $driver)
+                        <option value="{{ $driver->id }}" {{ request('driver') == $driver->id ? 'selected' : '' }}>{{ $driver->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="granularity" class="form-label">Report Granularity</label>
+                    <select id="granularitySelect" name="granularity" class="form-select" onchange="updateGranularity(this.value)">
+                        <option value="daily" {{ $granularity == 'daily' ? 'selected' : '' }}>Daily Breakdown</option>
+                        <option value="weekly" {{ $granularity == 'weekly' ? 'selected' : '' }}>Weekly Summary</option>
+                        <option value="monthly" {{ $granularity == 'monthly' ? 'selected' : '' }}>Monthly Summary</option>
+                    </select>
                 </div>
             </div>
         </div>
     </div>
+</div>
     
     <!-- Summary Cards -->
     <div class="row mb-4 no-print">
@@ -384,20 +373,15 @@
         </div>
     </div>
     
-    <!-- Inside the printable-section div -->
-<div class="printable-section">
-    <!-- Print Header (no changes) -->
-    ...
-    
-    <!-- Delivery List - Making it responsive -->
-    <div class="card">
+    <!-- Delivery List Table -->
+    <div class="card shadow-sm">
         <div class="card-header bg-white">
             <h5 class="card-title mb-0">Delivery Details</h5>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
                             <th>Order #</th>
                             <th>Customer</th>
@@ -413,23 +397,43 @@
                         @forelse($deliveries as $delivery)
                         <tr>
                             <td>#{{ $delivery->id }}</td>
-                            <td>{{ $delivery->customer->name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary me-2">
+                                        {{ substr($delivery->customer->name, 0, 1) }}
+                                    </div>
+                                    <div>{{ $delivery->customer->name }}</div>
+                                </div>
+                            </td>
                             <td>
                                 @if($delivery->delivery_date)
                                     {{ Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y') }}
                                 @else
-                                    Pending
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                 @endif
                             </td>
                             <td>{{ $delivery->deliveryPerson->name ?? 'Not Assigned' }}</td>
                             <td>{{ $delivery->quantity }}</td>
-                            <td>{{ ucfirst($delivery->order_status) }}</td>
-                            <td>{{ ucfirst($delivery->payment_status) }}</td>
-                            <td class="text-end">₱{{ number_format($delivery->total_amount, 2) }}</td>
+                            <td>
+                                <span class="badge {{ $delivery->order_status == 'pending' ? 'bg-warning text-dark' : 'bg-success' }}">
+                                    {{ ucfirst($delivery->order_status) }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {{ $delivery->payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                    {{ ucfirst($delivery->payment_status) }}
+                                </span>
+                            </td>
+                            <td class="text-end fw-semibold">₱{{ number_format($delivery->total_amount, 2) }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center">No deliveries found for the selected period</td>
+                            <td colspan="8" class="text-center py-4">
+                                <div class="d-flex flex-column align-items-center">
+                                    <i class="bi bi-truck text-muted mb-2" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mb-0">No deliveries found for the selected period</p>
+                                </div>
+                            </td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -444,8 +448,7 @@
                 </table>
             </div>
         </div>
-    </div>
-</div>
+        
         @if($deliveries->hasPages())
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
             <div class="per-page-selector">
@@ -467,6 +470,63 @@
         </div>
         @endif
     </div>
+    
+    <!-- Printable Section -->
+    <div class="printable-section" style="display: none;">
+        <div class="print-header">
+            <h3>Mi-Gail Water Refilling Station</h3>
+            <h4>Delivery Report</h4>
+            <p>{{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}</p>
+        </div>
+        
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Delivery Date</th>
+                    <th>Personnel</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($deliveries as $delivery)
+                <tr>
+                    <td>#{{ $delivery->id }}</td>
+                    <td>{{ $delivery->customer->name }}</td>
+                    <td>
+                        @if($delivery->delivery_date)
+                            {{ Carbon\Carbon::parse($delivery->delivery_date)->format('M d, Y') }}
+                        @else
+                            Pending
+                        @endif
+                    </td>
+                    <td>{{ $delivery->deliveryPerson->name ?? 'Not Assigned' }}</td>
+                    <td>{{ $delivery->quantity }}</td>
+                    <td>{{ ucfirst($delivery->order_status) }}</td>
+                    <td>{{ ucfirst($delivery->payment_status) }}</td>
+                    <td>₱{{ number_format($delivery->total_amount, 2) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4"><strong>Total: {{ $totalDeliveries }} deliveries</strong></td>
+                    <td><strong>{{ $totalQuantity }}</strong></td>
+                    <td colspan="2"></td>
+                    <td><strong>₱{{ number_format($totalDeliveryAmount, 2) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+        
+        <div class="print-footer">
+            <p>Generated on: {{ now()->format('M d, Y h:i A') }}</p>
+            <p>Generated by: {{ auth()->user()->name }}</p>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -481,8 +541,16 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location = url.toString();
     };
     
-    // Function to update granularity parameter
-    window.updateGranularity = function(value) {
+    // Function to update driver parameter
+    window.updateDriver = function(value) {
+        const url = new URL(window.location);
+        url.searchParams.set('driver', value);
+        showLoading();
+        window.location = url.toString();
+    };
+    
+        // Function to update granularity parameter
+        window.updateGranularity = function(value) {
         const url = new URL(window.location);
         url.searchParams.set('granularity', value);
         showLoading();

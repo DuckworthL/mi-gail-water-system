@@ -26,31 +26,26 @@ class DeliveryController extends Controller
      * @return \Illuminate\View\View
      */
     public function index(Request $request)
-    {
-        $status = $request->status ?? 'pending';
-        
-        $query = Order::with(['customer', 'deliveryPerson'])
-            ->where('is_delivery', true);
-        
-        if ($status !== 'all') {
-            $query->where('order_status', $status);
-        }
-        
-        // If user is delivery personnel, only show their assigned deliveries
-        if (auth()->user()->isDelivery()) {
-            $query->where('delivery_user_id', auth()->id());
-        }
-        
-        $deliveries = $query->latest()->paginate(15);
-        $pendingCount = Order::where('is_delivery', true)
-            ->where('order_status', 'pending')
-            ->when(auth()->user()->isDelivery(), function($query) {
-                return $query->where('delivery_user_id', auth()->id());
-            })
-            ->count();
-        
-        return view('deliveries.index', compact('deliveries', 'pendingCount'));
+{
+    $status = $request->status ?? 'pending';
+    $perPage = in_array($request->per_page, [10, 20, 50, 100]) ? $request->per_page : 10;
+    
+    $query = Order::where('is_delivery', true);
+    
+    if ($status !== 'all') {
+        $query->where('order_status', $status);
     }
+    
+    $deliveries = $query->with(['customer', 'deliveryPerson'])
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
+    
+    $pendingCount = Order::where('is_delivery', true)
+        ->where('order_status', 'pending')
+        ->count();
+    
+    return view('deliveries.index', compact('deliveries', 'pendingCount'));
+}
 
     /**
      * Show a specific delivery order details.

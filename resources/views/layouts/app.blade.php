@@ -34,7 +34,7 @@
             max-width: 180px;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: white; /* Making the clock text white to match other navbar elements */
+            color: white;
         }
         
         /* Make Reports nav item match Customers */
@@ -48,6 +48,42 @@
             height: 100%;
             display: flex;
             align-items: center;
+        }
+        
+        /* Consistent pagination styles */
+        .pagination {
+            margin-bottom: 0;
+        }
+
+        .page-item .page-link {
+            color: #0d6efd;
+            border-radius: 4px;
+            margin: 0 2px;
+        }
+
+        .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+        .per-page-selector {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .per-page-selector .btn {
+            border-radius: 0;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .per-page-selector .btn:first-child {
+            border-top-left-radius: 0.25rem;
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .per-page-selector .btn:last-child {
+            border-top-right-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
         }
         
         @media (max-width: 991px) {
@@ -77,7 +113,7 @@
                     <span>Mi-Gail Water</span>
                 </a>
                 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 

@@ -145,79 +145,87 @@ class ReportController extends Controller
      * @return \Illuminate\View\View
      */
     public function deliveryReport(Request $request)
-    {
-        // Get report period and set default to 'custom'
-        $reportPeriod = $request->period ?? 'custom';
-        $granularity = $request->granularity ?? 'daily';
-        $perPage = in_array($request->per_page, [10, 20, 50, 100]) ? $request->per_page : 20;
-        
-        // Get date range
-        if ($reportPeriod === 'daily') {
-            $startDate = Carbon::today();
-            $endDate = Carbon::today()->endOfDay();
-        } elseif ($reportPeriod === 'weekly') {
-            $startDate = Carbon::now()->startOfWeek();
-            $endDate = Carbon::now()->endOfWeek()->endOfDay();
-        } elseif ($reportPeriod === 'monthly') {
-            $startDate = Carbon::now()->startOfMonth();
-            $endDate = Carbon::now()->endOfMonth()->endOfDay();
-        } else {
-            // Custom date range
-            $startDate = $request->start_date ? Carbon::parse($request->start_date) : Carbon::now()->startOfMonth();
-            $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
-        }
-        
-        // Base query for deliveries
-        $query = Order::where('is_delivery', true)
-            ->whereBetween('created_at', [$startDate, $endDate]);
-        $baseQuery = clone $query;
-        
-        // Apply status filter
-        if ($request->has('status') && $request->status !== 'all') {
-            $query->where('order_status', $request->status);
-        }
-        
-        // Get totals
-        $totalDeliveries = $baseQuery->count();
-        $totalDeliveryAmount = $baseQuery->sum('total_amount');
-        $completedDeliveries = $baseQuery->where('order_status', 'completed')->count();
-        $pendingDeliveries = $baseQuery->where('order_status', 'pending')->count();
-        $totalQuantity = $baseQuery->sum('quantity');
-        
-        // Get all delivery orders
-        $deliveries = $query->with(['customer', 'deliveryPerson'])
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
-        
-        // Get delivery personnel performance stats
-        $personnelStats = DB::table('orders')
-            ->select('users.id', 'users.name')
-            ->selectRaw('COUNT(orders.id) as total_deliveries')
-            ->selectRaw('SUM(CASE WHEN orders.order_status = "completed" THEN 1 ELSE 0 END) as completed_deliveries')
-            ->selectRaw('SUM(orders.quantity) as total_quantity')
-            ->join('users', 'orders.delivery_user_id', '=', 'users.id')
-            ->where('orders.is_delivery', true)
-            ->whereBetween('orders.created_at', [$startDate, $endDate])
-            ->groupBy('users.id', 'users.name')
-            ->having('total_deliveries', '>', 0)
-            ->orderByDesc('total_deliveries')
-            ->get();
-        
-        return view('reports.delivery', compact(
-            'deliveries',
-            'totalDeliveries',
-            'totalDeliveryAmount',
-            'completedDeliveries',
-            'pendingDeliveries',
-            'totalQuantity',
-            'personnelStats',
-            'startDate',
-            'endDate',
-            'reportPeriod',
-            'granularity',
-            'perPage'
-        ));
+{
+    // Get report period and set default to 'custom'
+    $reportPeriod = $request->period ?? 'custom';
+    $granularity = $request->granularity ?? 'daily';
+    $perPage = in_array($request->per_page, [10, 20, 50, 100]) ? $request->per_page : 20;
+    $filterStatus = $request->status ?? 'all'; // Add this line to define the variable
+    
+    // Get date range
+    if ($reportPeriod === 'daily') {
+        $startDate = Carbon::today();
+        $endDate = Carbon::today()->endOfDay();
+    } elseif ($reportPeriod === 'weekly') {
+        $startDate = Carbon::now()->startOfWeek();
+        $endDate = Carbon::now()->endOfWeek()->endOfDay();
+    } elseif ($reportPeriod === 'monthly') {
+        $startDate = Carbon::now()->startOfMonth();
+        $endDate = Carbon::now()->endOfMonth()->endOfDay();
+    } else {
+        // Custom date range
+        $startDate = $request->start_date ? Carbon::parse($request->start_date) : Carbon::now()->startOfMonth();
+        $endDate = $request->end_date ? Carbon::parse($request->end_date)->endOfDay() : Carbon::now()->endOfDay();
     }
+    
+    // Base query for deliveries
+    $query = Order::where('is_delivery', true)
+        ->whereBetween('created_at', [$startDate, $endDate]);
+    $baseQuery = clone $query;
+    
+    // Apply status filter
+    if ($request->has('status') && $request->status !== 'all') {
+        $query->where('order_status', $request->status);
+    }
+    
+    // Get totals
+    $totalDeliveries = $baseQuery->count();
+    $totalDeliveryAmount = $baseQuery->sum('total_amount');
+    $completedDeliveries = $baseQuery->where('order_status', 'completed')->count();
+    $pendingDeliveries = $baseQuery->where('order_status', 'pending')->count();
+    $totalQuantity = $baseQuery->sum('quantity');
+    
+    // Get all delivery orders
+    $deliveries = $query->with(['customer', 'deliveryPerson'])
+        ->orderBy('created_at', 'desc')
+        ->paginate($perPage);
+    
+    // Get delivery personnel performance stats
+    $personnelStats = DB::table('orders')
+        ->select('users.id', 'users.name')
+        ->selectRaw('COUNT(orders.id) as total_deliveries')
+        ->selectRaw('SUM(CASE WHEN orders.order_status = "completed" THEN 1 ELSE 0 END) as completed_deliveries')
+        ->selectRaw('SUM(orders.quantity) as total_quantity')
+        ->join('users', 'orders.delivery_user_id', '=', 'users.id')
+        ->where('orders.is_delivery', true)
+        ->whereBetween('orders.created_at', [$startDate, $endDate])
+        ->groupBy('users.id', 'users.name')
+        ->having('total_deliveries', '>', 0)
+        ->orderByDesc('total_deliveries')
+        ->get();
+    
+    // Get drivers for filtering
+    $drivers = User::whereIn('role', ['delivery', 'helper'])->get();
+    $filterDriver = $request->driver ?? 'all'; // Add this line for driver filtering
+    
+    return view('reports.delivery', compact(
+        'deliveries',
+        'totalDeliveries',
+        'totalDeliveryAmount',
+        'completedDeliveries',
+        'pendingDeliveries',
+        'totalQuantity',
+        'personnelStats',
+        'startDate',
+        'endDate',
+        'reportPeriod',
+        'granularity',
+        'perPage',
+        'filterStatus', // Add this variable to the compact array
+        'drivers', // Add this for driver filtering
+        'filterDriver' // Add this for driver filtering
+    ));
+}
 
     /**
      * Display the customer report.

@@ -2,146 +2,81 @@
 
 @section('styles')
 <style>
-    /* Print-specific styles */
     @media print {
-        /* Hide everything by default */
-        body * {
-            visibility: hidden;
-        }
-        
-        /* Show only the printable section */
-        .printable-section, .printable-section * {
-            visibility: visible;
-        }
-        
-        /* Position the printable section at the top of the page */
+        body * { visibility: hidden; }
+        .printable-section, .printable-section * { visibility: visible; }
         .printable-section {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            padding: 15px;
+            position: absolute; left: 0; top: 0; width: 100%; padding: 15px;
         }
-        
-        /* Hide all non-printable elements */
-        .no-print, .stats-card, .chart-container {
-            display: none !important;
-        }
-        
-        /* Format the table properly */
+        .no-print, .stats-card, .chart-container { display: none !important; }
         .table {
             width: 100% !important;
             border-collapse: collapse !important;
             font-size: 10pt !important;
         }
-        
         .table th, .table td {
             border: 1px solid #ddd !important;
             padding: 5px !important;
         }
-        
-        /* Remove styling that wastes ink */
-        .card {
-            border: none !important;
-            box-shadow: none !important;
-            margin: 0 !important;
-        }
-        
-        .card-header, .card-body {
+        .badge {
+            background-color: transparent !important;
+            color: #000 !important;
+            font-weight: normal !important;
             padding: 0 !important;
         }
-        
-        /* Format header/footer for print */
-        .print-header {
-            text-align: center;
-            margin-bottom: 20px;
+        .card { border: none !important; box-shadow: none !important; margin: 0 !important; }
+        .card-header, .card-body { padding: 0 !important; }
+        .print-header { text-align: center; margin-bottom: 20px; }
+        .company-name {
+            font-size: 24px; font-weight: 700; margin-bottom: 5px;
+            text-transform: uppercase; letter-spacing: 1px;
         }
-        
+        .report-title { font-size: 20px; font-weight: 600; margin-bottom: 5px; }
+        .report-period { font-size: 16px; margin-bottom: 15px; }
         .print-footer {
-            margin-top: 30px;
-            page-break-inside: avoid;
+            margin-top: 30px; page-break-inside: avoid;
+            border-top: 1px solid #ddd; padding-top: 10px; font-size: 9pt;
         }
+        a { text-decoration: none !important; color: #000 !important; }
+        .print-table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .print-table th, .print-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .print-table th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        .print-table tr:nth-child(even) { background-color: #f2f2f2; }
     }
-    
-    /* Loading indicator */
     .loading-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(255, 255, 255, 0.8);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(255,255,255,0.8); z-index: 9999;
+        display: flex; align-items: center; justify-content: center; flex-direction: column;
     }
-    
     .spinner {
-        width: 50px;
-        height: 50px;
+        width: 50px; height: 50px;
         border: 4px solid var(--primary-color);
-        border-radius: 50%;
-        border-top: 4px solid #f3f3f3;
+        border-radius: 50%; border-top: 4px solid #f3f3f3;
         animation: spin 1s linear infinite;
     }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    /* Enhanced buttons */
-    .btn-group-report {
-        margin-bottom: 15px;
-    }
-    
-    .btn-report {
-        border-radius: 20px;
-        padding: 8px 16px;
-        margin-right: 5px;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-    
-    .btn-report:hover {
-        transform: translateY(-2px);
-    }
-    
-    .btn-report.active {
-        box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color);
-    }
-    
-    .delete-btn {
-        color: #dc3545 !important;
-        font-weight: 600;
-    }
-    
-    .delete-btn i {
-        margin-right: 5px;
-    }
-    
-    /* Enhanced records per page selector */
-    .per-page-selector {
-        display: inline-flex;
-        align-items: center;
-    }
-    
-    .per-page-selector .btn {
-        border-radius: 0;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .per-page-selector .btn:first-child {
-        border-top-left-radius: 0.25rem;
-        border-bottom-left-radius: 0.25rem;
-    }
-    
-    .per-page-selector .btn:last-child {
-        border-top-right-radius: 0.25rem;
-        border-bottom-right-radius: 0.25rem;
-    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .btn-group-report { margin-bottom: 15px; }
+    .btn-report { border-radius: 20px; padding: 8px 16px; margin-right: 5px; font-weight: 600; transition: all 0.2s; }
+    .btn-report:hover { transform: translateY(-2px); }
+    .btn-report.active { box-shadow: 0 0 0 2px white, 0 0 0 4px var(--primary-color); }
+    .delete-btn { color: #dc3545 !important; font-weight: 600; }
+    .delete-btn i { margin-right: 5px; }
+    .per-page-selector { display: inline-flex; align-items: center; }
+    .per-page-selector .btn { border-radius: 0; padding: 0.25rem 0.5rem; }
+    .per-page-selector .btn:first-child { border-top-left-radius: 0.25rem; border-bottom-left-radius: 0.25rem; }
+    .per-page-selector .btn:last-child { border-top-right-radius: 0.25rem; border-bottom-right-radius: 0.25rem; }
+    .printable-section { display: none; }
 </style>
 @endsection
 
@@ -195,8 +130,8 @@
             </div>
         </div>
     </div>
-    
-    <!-- Report Type Buttons -->
+
+    <!-- Report filters and controls - no-print -->
     <div class="card shadow-sm mb-4 no-print">
         <div class="card-body">
             <div class="row">
@@ -205,15 +140,15 @@
                     <div class="btn-group-report mb-3">
                         <a href="{{ route('reports.customer', ['period' => 'daily', 'filter' => request('filter', 'all')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'daily' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-day me-1"></i> Today
+                            <i class="bi bi-calendar-day me-1"></i> Daily
                         </a>
                         <a href="{{ route('reports.customer', ['period' => 'weekly', 'filter' => request('filter', 'all')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'weekly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-week me-1"></i> This Week
+                            <i class="bi bi-calendar-week me-1"></i> Weekly
                         </a>
                         <a href="{{ route('reports.customer', ['period' => 'monthly', 'filter' => request('filter', 'all')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'monthly' ? 'btn-primary active' : 'btn-outline-primary' }}">
-                            <i class="bi bi-calendar-month me-1"></i> This Month
+                            <i class="bi bi-calendar-month me-1"></i> Monthly
                         </a>
                         <a href="{{ route('reports.customer', ['period' => 'custom', 'filter' => request('filter', 'all')]) }}" 
                            class="btn btn-report {{ $reportPeriod == 'custom' ? 'btn-primary active' : 'btn-outline-primary' }}">
@@ -244,228 +179,107 @@
                     <div class="mb-3">
                         <label for="filter" class="form-label">Customer Type</label>
                         <select id="filterSelect" name="filter" class="form-select" onchange="updateFilter(this.value)">
-                            <option value="all" {{ request('filter') == 'all' ? 'selected' : '' }}>All Customers</option>
+                            <option value="all" {{ request('filter', 'all') == 'all' ? 'selected' : '' }}>All Customers</option>
                             <option value="regular" {{ request('filter') == 'regular' ? 'selected' : '' }}>Regular Customers</option>
                             <option value="non-regular" {{ request('filter') == 'non-regular' ? 'selected' : '' }}>Non-Regular Customers</option>
-                            <option value="top" {{ request('filter', 'top') == 'top' ? 'selected' : '' }}>Top Customers</option>
+                            <option value="top" {{ request('filter') == 'top' ? 'selected' : '' }}>Top Customers</option>
                         </select>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Summary Cards -->
-    <div class="row mb-4 no-print">
-        <div class="col-md-3">
-            <div class="card shadow-sm stats-card bg-white">
-                <div class="stats-icon text-primary">
-                    <i class="bi bi-people"></i>
-                </div>
-                <h6 class="text-muted mb-2">Total Customers</h6>
-                <h3 class="mb-0">{{ $totalCustomers }}</h3>
-                <div class="mt-2 text-muted">
-                    <small>{{ $regularCustomers }} regular customers</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm stats-card bg-white">
-                <div class="stats-icon text-success">
-                    <i class="bi bi-cart-check"></i>
-                </div>
-                <h6 class="text-muted mb-2">Total Orders</h6>
-                <h3 class="mb-0">{{ $totalOrders }}</h3>
-                <div class="mt-2 text-muted">
-                    <small>₱{{ number_format($totalSales, 2) }} revenue</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm stats-card bg-white">
-                <div class="stats-icon text-warning">
-                    <i class="bi bi-graph-up"></i>
-                </div>
-                <h6 class="text-muted mb-2">Average Order Value</h6>
-                <h3 class="mb-0">₱{{ $avgOrderValue ? number_format($avgOrderValue, 2) : '0.00' }}</h3>
-                <div class="mt-2 text-muted">
-                    <small>per order</small>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card shadow-sm stats-card bg-white">
-                <div class="stats-icon text-info">
-                    <i class="bi bi-repeat"></i>
-                </div>
-                <h6 class="text-muted mb-2">Repeat Customer Rate</h6>
-                <h3 class="mb-0">{{ $totalCustomers > 0 ? number_format(($repeatCustomers / $totalCustomers) * 100, 1) : '0.0' }}%</h3>
-                <div class="mt-2 text-muted">
-                    <small>{{ $repeatCustomers }} repeat customers</small>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Top Customers Chart -->
+
+    <!-- Customer Table (screen only) -->
     <div class="card shadow-sm mb-4 no-print">
-        <div class="card-header bg-white">
-            <h5 class="card-title mb-0">Top Customers by Revenue</h5>
-        </div>
-        <div class="card-body">
-            <canvas id="topCustomersChart" height="350"></canvas>
-        </div>
-    </div>
-    
-    <!-- Inside the printable-section div -->
-<div class="printable-section">
-    <!-- Print Header (no changes) -->
-    ...
-    
-    <!-- Customer Table - Making it responsive -->
-    <div class="card">
-        <div class="card-header bg-white">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">Customer Details</h5>
+            <div>
+                <span class="text-muted">
+                    {{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}
+                </span>
+            </div>
         </div>
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
                         <tr>
+                            <th>ID</th>
                             <th>Customer</th>
                             <th>Type</th>
                             <th>Orders</th>
                             <th>Total Spent</th>
                             <th>Avg. Order</th>
                             <th>Last Order</th>
+                            <th class="text-end">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($customers as $customer)
                         <tr>
-                            <td>{{ $customer->name }}</td>
-                            <td>{{ $customer->is_regular ? 'Regular' : 'One-time' }}</td>
+                            <td>{{ $customer->id }}</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="avatar-circle bg-primary me-2" style="color: #fff; font-weight: bold;">
+                                        {{ strtoupper(substr($customer->name, 0, 1)) }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ $customer->name }}</div>
+                                        <small class="text-muted">{{ $customer->phone }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {{ $customer->is_regular ? 'bg-success' : 'bg-secondary' }} rounded-pill">
+                                    {{ $customer->is_regular ? 'Regular' : 'One-time' }}
+                                </span>
+                            </td>
                             <td>{{ $customer->orders_count }}</td>
-                            <td>₱{{ number_format($customer->total_spent, 2) }}</td>
+                            <td class="fw-semibold">₱{{ number_format($customer->total_spent, 2) }}</td>
                             <td>₱{{ number_format($customer->orders_count > 0 ? $customer->total_spent / $customer->orders_count : 0, 2) }}</td>
                             <td>{{ $customer->last_order ? $customer->last_order->format('M d, Y') : 'N/A' }}</td>
+                            <td class="text-end">
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('customers.show', $customer->id) }}">
+                                                <i class="bi bi-eye me-2"></i>View Profile
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('customers.edit', $customer->id) }}">
+                                                <i class="bi bi-pencil me-2"></i>Edit Customer
+                                            </a>
+                                        </li>
+                                        @if($customer->orders_count == 0)
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="dropdown-item delete-btn" onclick="return confirm('Are you sure you want to delete this customer? This action cannot be undone.')">
+                                                    <i class="bi bi-trash text-danger me-2"></i><span class="text-danger">Delete</span>
+                                                </button>
+                                            </form>
+                                        </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="text-center py-3">No customers found for the selected criteria</td>
+                            <td colspan="8" class="text-center py-3">No customers found for the selected criteria</td>
                         </tr>
                         @endforelse
                     </tbody>
-                    <tfoot>
-                        <tr class="table-light fw-bold">
-                            <td colspan="2">Total: {{ $totalCustomers }} customers</td>
-                            <td>{{ $totalOrders }}</td>
-                            <td>₱{{ number_format($totalSales, 2) }}</td>
-                            <td>₱{{ $avgOrderValue ? number_format($avgOrderValue, 2) : '0.00' }}</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
                 </table>
             </div>
         </div>
-    </div>
-    
-    <!-- Print Footer (no changes) -->
-    ...
-</div>
-
-<!-- Customer Table (screen only) - Making it responsive -->
-<div class="card shadow-sm no-print">
-    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-        <h5 class="card-title mb-0">Customer Details</h5>
-        <div>
-            <span class="text-muted">
-                {{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}
-            </span>
-        </div>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Customer</th>
-                        <th>Type</th>
-                        <th>Orders</th>
-                        <th>Total Spent</th>
-                        <th>Avg. Order</th>
-                        <th>Last Order</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($customers as $customer)
-                    <tr>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <div class="avatar-circle bg-primary me-2">
-                                    {{ substr($customer->name, 0, 1) }}
-                                </div>
-                                <div>
-                                    <div class="fw-semibold">{{ $customer->name }}</div>
-                                    <small class="text-muted">{{ $customer->phone }}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge {{ $customer->is_regular ? 'bg-success' : 'bg-secondary' }} rounded-pill">
-                                {{ $customer->is_regular ? 'Regular' : 'One-time' }}
-                            </span>
-                        </td>
-                        <td>{{ $customer->orders_count }}</td>
-                        <td class="fw-semibold">₱{{ number_format($customer->total_spent, 2) }}</td>
-                        <td>₱{{ number_format($customer->orders_count > 0 ? $customer->total_spent / $customer->orders_count : 0, 2) }}</td>
-                        <td>{{ $customer->last_order ? $customer->last_order->format('M d, Y') : 'N/A' }}</td>
-                        <td class="text-end">
-                            <div class="dropdown">
-                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-three-dots"></i>
-                                </button>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('customers.show', $customer->id) }}">
-                                            <i class="bi bi-eye me-2"></i>View Profile
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{{ route('customers.edit', $customer->id) }}">
-                                            <i class="bi bi-pencil me-2"></i>Edit Customer
-                                        </a>
-                                    </li>
-                                    @if($customer->orders_count == 0)
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form action="{{ route('customers.destroy', $customer->id) }}" method="POST" class="delete-form">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="dropdown-item delete-btn" onclick="return confirm('Are you sure you want to delete this customer? This action cannot be undone.')">
-                                                <i class="bi bi-trash text-danger me-2"></i><span class="text-danger">Delete</span>
-                                            </button>
-                                        </form>
-                                    </li>
-                                    @endif
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-3">No customers found for the selected criteria</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- Pagination (no changes) -->
-    ...
-</div>
         @if($customers->hasPages())
         <div class="card-footer bg-white d-flex justify-content-between align-items-center">
             <div class="per-page-selector">
@@ -487,6 +301,60 @@
         </div>
         @endif
     </div>
+
+    <!-- Printable Section - format matches sales.blade.php -->
+    <div class="printable-section">
+        <div class="print-header">
+            <div class="company-name">MI-GAIL WATER</div>
+            <div class="report-title">CUSTOMER REPORT</div>
+            <div class="report-period">{{ $startDate->format('M d, Y') }} to {{ $endDate->format('M d, Y') }}</div>
+        </div>
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Customer</th>
+                    <th>Type</th>
+                    <th>Orders</th>
+                    <th>Total Spent</th>
+                    <th>Avg. Order</th>
+                    <th>Last Order</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($customers as $customer)
+                <tr>
+                    <td>{{ $customer->id }}</td>
+                    <td>{{ $customer->name }}</td>
+                    <td>{{ $customer->is_regular ? 'Regular' : 'One-time' }}</td>
+                    <td>{{ $customer->orders_count }}</td>
+                    <td>₱{{ number_format($customer->total_spent, 2) }}</td>
+                    <td>₱{{ number_format($customer->orders_count > 0 ? $customer->total_spent / $customer->orders_count : 0, 2) }}</td>
+                    <td>{{ $customer->last_order ? $customer->last_order->format('M d, Y') : 'N/A' }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3"><strong>Total: {{ $totalCustomers }} customers</strong></td>
+                    <td><strong>{{ $totalOrders }}</strong></td>
+                    <td><strong>₱{{ number_format($totalSales, 2) }}</strong></td>
+                    <td><strong>₱{{ $avgOrderValue ? number_format($avgOrderValue, 2) : '0.00' }}</strong></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="print-footer mt-4">
+            <div class="row">
+                <div class="col-6">
+                    <p class="mb-0"><strong>Generated by:</strong> {{ auth()->user()->name }}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <p class="mb-0"><strong>Date Generated:</strong> {{ now()->format('Y-m-d H:i:s') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -494,143 +362,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('topCustomersChart');
-    
-    // Chart data
-    const customerData = @json($chartData);
-    
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: customerData.names,
-            datasets: [
-                {
-                    label: 'Revenue (₱)',
-                    data: customerData.revenues,
-                    backgroundColor: 'rgba(8, 145, 178, 0.7)',
-                    borderColor: 'rgba(8, 145, 178, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4
-                },
-                {
-                    label: 'Orders',
-                    data: customerData.orders,
-                    backgroundColor: 'rgba(245, 158, 11, 0.7)',
-                    borderColor: 'rgba(245, 158, 11, 1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Customers',
-                        font: {
-                            weight: 'bold'
-                        }
-                    },
-                    grid: {
-                        display: false
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Revenue (₱)',
-                        font: {
-                            weight: 'bold'
-                        }
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return '₱' + value.toLocaleString();
-                        },
-                        precision: 0
-                    },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    }
-                },
-                y1: {
-                    position: 'right',
-                    title: {
-                        display: true,
-                        text: 'Number of Orders',
-                        font: {
-                            weight: 'bold'
-                        }
-                    },
-                    grid: {
-                        drawOnChartArea: false,
-                        color: 'rgba(245, 158, 11, 0.1)'
-                    },
-                    ticks: {
-                        precision: 0
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        boxWidth: 10
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    titleColor: '#333',
-                    bodyColor: '#666',
-                    borderColor: '#ddd',
-                    borderWidth: 1,
-                    padding: 10,
-                    boxPadding: 5,
-                    cornerRadius: 4,
-                    displayColors: true,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            if (context.dataset.label === 'Revenue (₱)') {
-                                label += '₱' + context.parsed.y.toLocaleString(undefined, {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                            } else {
-                                label += context.parsed.y;
-                            }
-                            return label;
-                        }
-                    }
-                }
-            }
-        }
-    });
-    
-    // Function to update filter parameter
     window.updateFilter = function(value) {
         const url = new URL(window.location);
         url.searchParams.set('filter', value);
         showLoading();
         window.location = url.toString();
     };
-    
-    // Show loading indicator
     window.showLoading = function() {
         document.getElementById('loadingOverlay').style.display = 'flex';
     };
-    
-    // Add loading indicator to the form submit
-    document.getElementById('reportForm').addEventListener('submit', function() {
-        showLoading();
+    if (document.getElementById('reportForm')) {
+        document.getElementById('reportForm').addEventListener('submit', function() {
+            showLoading();
+        });
+    }
+    window.addEventListener('beforeprint', function() {
+        document.querySelector('.printable-section').style.display = 'block';
+    });
+    window.addEventListener('afterprint', function() {
+        document.querySelector('.printable-section').style.display = 'none';
     });
 });
 </script>
